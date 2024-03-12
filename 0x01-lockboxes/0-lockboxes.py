@@ -1,14 +1,15 @@
 #!/usr/bin/python3
-"""Solves the lock abox puzzle """
+"""Solves the lock boxes puzzle """
 
-def myOpener(openbox):
+
+def look_next_opened_box(opened_boxes):
     """Looks for the next opened box
     Args:
-        openbox (dict): Dictionary which contains abox already opened
+        opened_boxes (dict): Dictionary which contains boxes already opened
     Returns:
         list: List with the keys contained in the opened box
     """
-    for index, box in openbox.items():
+    for index, box in opened_boxes.items():
         if box.get('status') == 'opened':
             box['status'] = 'opened/checked'
             return box.get('keys')
@@ -16,43 +17,43 @@ def myOpener(openbox):
 
 
 def canUnlockAll(boxes):
-    """Check if all abox can be opened
+    """Check if all boxes can be opened
     Args:
-        abox (list): List which contain all the abox with the keys
+        boxes (list): List which contain all the boxes with the keys
     Returns:
-        bool: True if all abox can be opened, otherwise, False
+        bool: True if all boxes can be opened, otherwise, False
     """
     if len(boxes) <= 1 or boxes == [[]]:
         return True
 
-    xcs = {}
+    aux = {}
     while True:
-        if len(xcs) == 0:
-            xcs[0] = {
+        if len(aux) == 0:
+            aux[0] = {
                 'status': 'opened',
                 'keys': boxes[0],
             }
-        keys = myOpener(xcs)
+        keys = look_next_opened_box(aux)
         if keys:
             for key in keys:
                 try:
-                    if xcs.get(key) and xcs.get(key).get('status') \
+                    if aux.get(key) and aux.get(key).get('status') \
                        == 'opened/checked':
                         continue
-                    xcs[key] = {
+                    aux[key] = {
                         'status': 'opened',
                         'keys': boxes[key]
                     }
                 except (KeyError, IndexError):
                     continue
-        elif 'opened' in [box.get('status') for box in xcs.values()]:
+        elif 'opened' in [box.get('status') for box in aux.values()]:
             continue
-        elif len(xcs) == len(boxes):
+        elif len(aux) == len(boxes):
             break
         else:
             return False
 
-    return len(xcs) == len(boxes)
+    return len(aux) == len(boxes)
 
 
 def main():
